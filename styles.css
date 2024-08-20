@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffffff;
+}
+
+#header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #888;
+}
+
+h1 {
+    margin: 15px;
+}
+
+#rest {
+    padding-top: 50px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: #fafafa;
+    background-image: url(logo_hyris_hexguesser.png);
+    background-size: 24px;
+    background-repeat: repeat;
+}
+
+#content {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #888;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+#panels-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.panel-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.panel-title {
+    font-size: x-large;
+}
+
+.color-panel {
+    width: min(300px, 35vw);
+    height: min(300px, 35vw);
+    margin: min(20px, 3vw);
+    border: 2px solid #888;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+#hash-sign {
+    font-size: x-large;
+    opacity: 50%;
+}
+
+#error-message {
+    color: red;
+    margin-bottom: 10px;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px;
+    font-family: monospace;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: monospace;
+}
+
+#result-message {
+    margin-top: 20px;
+    font-size: 18px;
+    white-space: pre-wrap;
+    text-align: center;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HexGuessr</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="header">
+        <h1>HexGuessr</h1>
+    </div>
+    <div id="rest">
+        <div id="content">
+            <div id="panels-container">
+                <div class="panel-container">
+                    <p class="panel-title">Target</p>
+                    <div id="target-color-panel" class="color-panel"></div>
+                </div>
+                <div class="panel-container">
+                    <p class="panel-title">Your guess</p>
+                    <div id="your-guess-color-panel" class="color-panel">Input a guess below!</div>
+                </div>
+            </div>
+            <div id="input-container">
+            <p id="hash-sign">#</p>
+                <input type="text" id="color-guess" placeholder="Guess the color hex code (e.g., #AABBCC)">
+            </div>
+            <p id="error-message"></p>
+            <button onclick="checkGuess()">Check Guess</button>
+            <p id="result-message"></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
