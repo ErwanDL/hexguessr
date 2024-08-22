@@ -14,46 +14,126 @@ body {
     background-color: #ffffff;
 }
 
+input {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px;
+    font-family: monospace;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: monospace;
+    border: none;
+    border-radius: 5px;
+}
+
 #header {
     width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid #888;
+    justify-content: space-between;
+    border-bottom: 1px solid #69696d;
 }
 
 h1 {
     margin: 15px;
+    text-align: center;
 }
 
+
+.header-divs {
+    flex: 1 0 0;
+}
+
+#header-right-div {
+    text-align: right;
+    padding-right: 20px;
+}
+
+#github-link {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#github-logo {
+    width: 32px;
+    height: 32px;
+}
+
+#github-link:hover {
+    opacity: 80%;
+}
+
+
 #rest {
-    padding-top: 50px;
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     background-color: #fafafa;
     background-image: url(logo_hyris_hexguesser.png);
     background-size: 24px;
     background-repeat: repeat;
 }
 
-#content {
-    display: inline-flex;
+.card {
+    margin-top: 20px;
+    background-color: white;
+    border: 1px solid #69696d;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.card-title {
+    font-size: x-large;
+    margin-bottom: 20px;
+}
+
+#game-mode-container {
+    display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: white;
-    border: 1px solid #888;
-    border-radius: 10px;
-    padding: 20px;
+}
+
+#game-mode-selector {
+    display: flex;
+    flex-direction: row;
+}
+
+.game-mode-button {
+    overflow: hidden;
+    margin: 10px;
+}
+
+.selected-game-mode-button {
+    background-color: #69696d;
+    color: #fff;
+    box-shadow: 0 3px 3px lightgray;
+}
+
+#game-mode-description {
+    white-space: pre-wrap;
+    text-align: center;
+}
+
+#content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 #panels-container {
     display: flex;
     flex-direction: row;
+    justify-content: space-evenly;
 }
 
 .panel-container {
@@ -63,14 +143,14 @@ h1 {
 }
 
 .panel-title {
-    font-size: x-large;
+    font-size: large;
 }
 
 .color-panel {
     width: min(300px, 35vw);
     height: min(300px, 35vw);
-    margin: min(20px, 3vw);
-    border: 2px solid #888;
+    margin: 10px;
+    border: 1px solid #69696d;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -95,22 +175,8 @@ h1 {
     margin-bottom: 10px;
 }
 
-input {
-    padding: 10px;
-    font-size: 16px;
-    margin: 10px;
-    font-family: monospace;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    font-family: monospace;
-}
-
 #result-message {
-    margin-top: 20px;
+    margin: 20px;
     font-size: 18px;
     white-space: pre-wrap;
     text-align: center;

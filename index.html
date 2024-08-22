@@ -10,10 +10,32 @@
 </head>
 <body>
     <div id="header">
-        <h1>HexGuessr</h1>
+        <div class="header-divs"></div>
+        <div class="header-divs">
+            <h1>HexGuessr</h1>
+        </div>
+        <div id="header-right-div" class="header-divs">
+            <a target="_blank" rel="noopener noreferrer" id="github-link" href="https://github.com/erwandl/hexguessr">
+                <img id="github-logo" src="github-logo.png" alt="Github link">
+                <p style="display: inline">source</p>
+            </a>
+        </div>
     </div>
     <div id="rest">
-        <div id="content">
+        <div id="game-mode-container" class="card">
+            <p class="card-title">Choose a game mode</p>
+            <div id="game-mode-selector">
+                <button id="classic-mode" onclick="selectGameMode(this.id)" class="game-mode-button">
+                    Classic
+                </button>
+                <button id="training-mode" onclick="selectGameMode(this.id)" class="game-mode-button">
+                    Training
+                </button>
+            </div>
+            <p id="game-mode-description"></p>
+        </div>
+        <div id="content" class="card">
+            <p id="date-title" class="card-title"></p>
             <div id="panels-container">
                 <div class="panel-container">
                     <p class="panel-title">Target</p>
@@ -21,16 +43,17 @@
                 </div>
                 <div class="panel-container">
                     <p class="panel-title">Your guess</p>
-                    <div id="your-guess-color-panel" class="color-panel">Input a guess below!</div>
+                    <div id="your-guess-color-panel" class="color-panel"></div>
                 </div>
             </div>
             <div id="input-container">
-            <p id="hash-sign">#</p>
-                <input type="text" id="color-guess" placeholder="Guess the color hex code (e.g., #AABBCC)">
+                <p id="hash-sign">#</p>
+                <input type="text" id="color-guess" placeholder="Guess the hex code">
             </div>
             <p id="error-message"></p>
-            <button onclick="checkGuess()">Check Guess</button>
+            <button id="check-guess-button">Check Guess</button>
             <p id="result-message"></p>
+            <button id="retry-button">Generate a new color</button>
         </div>
     </div>
     <script src="script.js"></script>
