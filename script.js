@@ -7,17 +7,22 @@ const hexCodeRe = /^([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$/;
 const selectedGameModeClass = "selected-game-mode-button";
 const classicMode = "classic-mode";
 const trainingMode = "training-mode";
+const blinkMode = "blink-mode";
 const gameModes = {};
 gameModes[classicMode] = "Everyday a new color, the same for everyone, only one attempt.\nChallenge your friends and get the highest score!";
 gameModes[trainingMode] = "Practice with as many attempts and random colors as you want.";
+gameModes[blinkMode] = "Only for the maddest out there: it's like Classic mode,\nbut you only get to see the color for 0.1s!"
 
 const gameModeDescription = document.getElementById('game-mode-description');
 const targetColorPanel = document.getElementById('target-color-panel');
 const yourGuessColorPanel = document.getElementById('your-guess-color-panel');
-const errorMessage = document.getElementById("error-message");
+const errorMessage = document.getElementById('error-message');
 const resultMessage = document.getElementById('result-message');
+const panelsContainer = document.getElementById('panels-container');
 const inputContainer = document.getElementById('input-container');
 const userGuessInput = document.getElementById('color-guess');
+const countdown = document.getElementById('countdown');
+const readyButton = document.getElementById('ready-button');
 const dateTitle = document.getElementById('date-title');
 const checkGuessButton = document.getElementById('check-guess-button');
 const retryButton = document.getElementById('retry-button');
@@ -48,29 +53,27 @@ function selectGameMode(id) {
         }
     }
 
-    teardownClassicMode();
-    teardownTrainingMode();
+    resetGameToDefault();
     if (id === classicMode) {
         setupClassicMode();
     } else if (id === trainingMode) {
         setupTrainingMode();
+    } else if (id === blinkMode) {
+        setupBlinkMode();
+    } else {
+        console.error("Unknown game mode ID: " + id);
     }
 }
 
 function setupClassicMode() {
-    resetInputsAndMessages();
-
     const today = getCurrentDateDMY();
-    dateTitle.textContent = "Color of the day: " + today[0] + " " + months[today[1]].slice(0, 3) + " " + today[2];
-    dateTitle.style.display = "";
+    dateTitle.textContent = "Classic Mode color of the day:\n" + formatDateDMY(today);
 
     const targetColorRGB = rgbColorFromDate(...today);
     checkGuessButton.onclick = function () { checkGuess(targetColorRGB, { dateDMY: today, key: classicMode }); };
-
-    setTargetColor(targetColorRGB);
+    targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
 
     const storedDataJSON = localStorage.getItem(classicMode);
-
     if (storedDataJSON == null) {
         return;
     }
@@ -82,48 +85,115 @@ function setupClassicMode() {
     }
 
     paintAndScoreUserGuessRGB(storedData.guessRGB, targetColorRGB);
-    inputContainer.style.display = "none";
-    checkGuessButton.style.display = "none";
-}
-
-function teardownClassicMode() {
-    resetInputsAndMessages();
-    dateTitle.style.display = "none";
-    inputContainer.style.display = "";
-    checkGuessButton.style.display = "";
+    disableGuessing();
 }
 
 function setupTrainingMode() {
-    resetInputsAndMessages();
+    dateTitle.style.display = "none";
 
+    // Show a retry button
     retryButton.style.display = "";
     retryButton.onclick = function () {
+        resetGameToDefault();
         setupTrainingMode();
     }
 
     const targetColorRGB = [random256(), random256(), random256()];
     checkGuessButton.onclick = function () { checkGuess(targetColorRGB); };
-    setTargetColor(targetColorRGB);
+    targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
 }
 
-function teardownTrainingMode() {
-    resetInputsAndMessages();
-    retryButton.style.display = "none";
-    retryButton.onclick = null;
+function setupBlinkMode() {
+    const today = getCurrentDateDMY();
+    dateTitle.textContent = "Blink Mode color of the day:\n" + formatDateDMY(today);
+
+    const targetColorRGB = rgbColorFromDate(...today.map((v) => v + 1));
+    checkGuessButton.onclick = function () { checkGuess(targetColorRGB, { dateDMY: today, key: blinkMode }); };
+    targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
+
+    const storedDataJSON = localStorage.getItem(blinkMode);
+    if (storedDataJSON != null) {
+        const storedData = JSON.parse(storedDataJSON);
+        if (datesDMYAreEqual(storedData.dateDMY, today)) {
+            paintAndScoreUserGuessRGB(storedData.guessRGB, targetColorRGB);
+            disableGuessing();
+            return;
+        }
+    }
+
+    disableGuessing();
+    panelsContainer.style.visibility = "hidden";
+    readyButton.style.display = "";
+
+    readyButton.onclick = function () {
+        readyButton.style.display = "none"
+        countdown.style.display = "";
+
+        let countdownValue = 3;
+        countdown.innerText = countdownValue;
+
+        // Start the countdown
+        const countdownInterval = setInterval(function () {
+            countdownValue--;
+            countdown.innerText = countdownValue;
+
+            if (countdownValue <= 0) {
+                clearInterval(countdownInterval);
+                countdown.style.display = "none";
+                panelsContainer.style.visibility = "visible";
+                reenableGuessing();
+
+                setTimeout(function () {
+                    targetColorPanel.style.backgroundColor = "";
+                    targetColorPanel.textContent = "Color already shown, you better not have blinked!"
+                }, 100);
+            }
+        }, 1000);
+    }
 }
 
-function resetInputsAndMessages() {
+function disableGuessing() {
+    inputContainer.style.display = "none";
+    checkGuessButton.style.display = "none";
+}
+
+function reenableGuessing() {
+    inputContainer.style.display = "";
+    checkGuessButton.style.display = "";
+}
+
+function resetGameToDefault() {
     // Reset all text fields
     userGuessInput.value = "";
     errorMessage.textContent = "";
     resultMessage.textContent = "";
 
-    // Unset the "Check Guess" button action
-    checkGuessButton.onclick = null;
+    // Restore guess input
+    inputContainer.style.display = "";
+    checkGuessButton.style.display = "";
 
-    // Reset guessed color
+    // Hide retry button
+    retryButton.style.display = "none";
+
+    // Hide ready button
+    readyButton.style.display = "none";
+
+    // Hide countdown
+    countdown.style.display = "none";
+
+    // Reset guessed color panel
     yourGuessColorPanel.textContent = "Input a guess below!";
-    yourGuessColorPanel.style.backgroundColor = "transparent";
+    yourGuessColorPanel.style.backgroundColor = "";
+
+    // Unset button actions
+    checkGuessButton.onclick = null;
+    retryButton.onclick = null;
+
+    // Restore date
+    dateTitle.style.display = "";
+
+    // Restore visibility of panelsContainer
+    panelsContainer.style.visibility = "";
 }
 
 // persistInfo is optional, if provided it must be structured like:
@@ -131,6 +201,10 @@ function resetInputsAndMessages() {
 function checkGuess(targetColorRGB, persistInfo = null) {
     errorMessage.textContent = "";
     resultMessage.textContent = "";
+
+    // Re-enable the target color panel (for blink mode)
+    targetColorPanel.textContent = "";
+    targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
 
     const userGuessRGB = parseUserGuessRGB();
     if (userGuessRGB === null) {
@@ -142,6 +216,8 @@ function checkGuess(targetColorRGB, persistInfo = null) {
     if (persistInfo !== null) {
         const storageData = { dateDMY: persistInfo.dateDMY, guessRGB: userGuessRGB };
         localStorage.setItem(persistInfo.key, JSON.stringify(storageData));
+
+        disableGuessing();
     }
 }
 
@@ -179,10 +255,6 @@ function rgbColorFromDate(day, month, year) {
     const b = cantor3(year, day, month) % 256;
 
     return [r, g, b]
-}
-
-function setTargetColor(rgbArr) {
-    targetColorPanel.style.backgroundColor = rgbToString(rgbArr);
 }
 
 function cantor3(a, b, c) {
@@ -238,4 +310,8 @@ function getCurrentDateDMY() {
 
 function datesDMYAreEqual(dateA, dateB) {
     return dateA[0] === dateB[0] && dateA[1] === dateB[1] && dateA[2] === dateB[2]
+}
+
+function formatDateDMY(d) {
+    return d[0] + " " + months[d[1]].slice(0, 3) + " " + d[2];
 }

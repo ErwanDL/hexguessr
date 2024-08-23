@@ -16,14 +16,14 @@ body {
 
 input {
     padding: 10px;
-    font-size: 16px;
+    font-size: large;
     margin: 10px;
     font-family: monospace;
 }
 
 button {
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: large;
     cursor: pointer;
     font-family: monospace;
     border: none;
@@ -58,6 +58,7 @@ h1 {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
+    color: #69696d;
 }
 
 #github-logo {
@@ -84,6 +85,7 @@ h1 {
 }
 
 .card {
+    width: min(660px, 95vw);
     margin-top: 20px;
     background-color: white;
     border: 1px solid #69696d;
@@ -93,23 +95,26 @@ h1 {
 
 .card-title {
     font-size: x-large;
-    margin-bottom: 20px;
+    text-align: center;
 }
 
 #game-mode-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 #game-mode-selector {
     display: flex;
     flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
 }
 
 .game-mode-button {
     overflow: hidden;
-    margin: 10px;
+    margin: 5px;
 }
 
 .selected-game-mode-button {
@@ -131,9 +136,28 @@ h1 {
 }
 
 #panels-container {
+    margin-top: 20px;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+}
+
+#countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    font-size: 8em;
+    visibility: visible;
+    z-index: 10;
+}
+
+#ready-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    visibility: visible;
+    z-index: 10;
 }
 
 .panel-container {
@@ -147,11 +171,11 @@ h1 {
 }
 
 .color-panel {
-    width: min(300px, 35vw);
-    height: min(300px, 35vw);
-    margin: 10px;
+    width: min(300px, 40vw);
+    height: min(300px, 40vw);
     border: 1px solid #69696d;
     border-radius: 10px;
+    margin: 10px;
     display: flex;
     align-items: center;
     justify-content: center;

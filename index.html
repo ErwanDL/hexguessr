@@ -34,6 +34,9 @@
                 <button id="classic-mode" onclick="selectGameMode(this.id)" class="game-mode-button">
                     Classic
                 </button>
+                <button id="blink-mode" onclick="selectGameMode(this.id)" class="game-mode-button">
+                    Blink
+                </button>
                 <button id="training-mode" onclick="selectGameMode(this.id)" class="game-mode-button">
                     Training
                 </button>
@@ -43,6 +46,8 @@
         <div id="content" class="card">
             <p id="date-title" class="card-title"></p>
             <div id="panels-container">
+                <p id="countdown"></p>
+                <button id="ready-button">Ready?</button>
                 <div class="panel-container">
                     <p class="panel-title">Target</p>
                     <div id="target-color-panel" class="color-panel"></div>
