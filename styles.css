@@ -141,16 +141,6 @@ h1 {
     flex-direction: row;
 }
 
-#countdown {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -20%);
-    font-size: 8em;
-    visibility: visible;
-    z-index: 10;
-}
-
 #ready-button {
     position: absolute;
     top: 50%;

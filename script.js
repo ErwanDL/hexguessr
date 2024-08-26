@@ -21,7 +21,6 @@ const resultMessage = document.getElementById('result-message');
 const panelsContainer = document.getElementById('panels-container');
 const inputContainer = document.getElementById('input-container');
 const userGuessInput = document.getElementById('color-guess');
-const countdown = document.getElementById('countdown');
 const readyButton = document.getElementById('ready-button');
 const dateTitle = document.getElementById('date-title');
 const checkGuessButton = document.getElementById('check-guess-button');
@@ -109,12 +108,12 @@ function setupBlinkMode() {
 
     const targetColorRGB = rgbColorFromDate(...today.map((v) => v + 1));
     checkGuessButton.onclick = function () { checkGuess(targetColorRGB, { dateDMY: today, key: blinkMode }); };
-    targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
 
     const storedDataJSON = localStorage.getItem(blinkMode);
     if (storedDataJSON != null) {
         const storedData = JSON.parse(storedDataJSON);
         if (datesDMYAreEqual(storedData.dateDMY, today)) {
+            targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
             paintAndScoreUserGuessRGB(storedData.guessRGB, targetColorRGB);
             disableGuessing();
             return;
@@ -127,20 +126,23 @@ function setupBlinkMode() {
 
     readyButton.onclick = function () {
         readyButton.style.display = "none"
-        countdown.style.display = "";
+        panelsContainer.style.visibility = "visible";
+        targetColorPanel.style.backgroundColor = "transparent";
 
         let countdownValue = 3;
-        countdown.innerText = countdownValue;
+        targetColorPanel.innerText = countdownValue;
+        targetColorPanel.style.fontSize = "5em";
 
         // Start the countdown
         const countdownInterval = setInterval(function () {
             countdownValue--;
-            countdown.innerText = countdownValue;
+            targetColorPanel.innerText = countdownValue;
 
             if (countdownValue <= 0) {
                 clearInterval(countdownInterval);
-                countdown.style.display = "none";
-                panelsContainer.style.visibility = "visible";
+                targetColorPanel.textContent = "none";
+                targetColorPanel.style.fontSize = "";
+                targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
                 reenableGuessing();
 
                 setTimeout(function () {
@@ -177,9 +179,6 @@ function resetGameToDefault() {
 
     // Hide ready button
     readyButton.style.display = "none";
-
-    // Hide countdown
-    countdown.style.display = "none";
 
     // Reset guessed color panel
     yourGuessColorPanel.textContent = "Input a guess below!";
