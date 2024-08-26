@@ -206,6 +206,10 @@ function resetGameToDefault() {
     yourGuessColorPanel.textContent = defaultGuessPanelText;
     yourGuessColorPanel.style.backgroundColor = "";
 
+    // Reset target color panel
+    targetColorPanel.textContent = "";
+    targetColorPanel.style.backgroundColor = "";
+
     // Unset button actions
     checkGuessButton.onclick = null;
     retryButton.onclick = null;
