@@ -14,7 +14,7 @@ body {
     background-color: #ffffff;
 }
 
-input {
+#color-guess {
     padding: 10px;
     font-size: large;
     margin: 10px;
@@ -22,12 +22,13 @@ input {
 }
 
 button {
-    padding: 10px 20px;
+    padding: 8px 16px;
     font-size: large;
     cursor: pointer;
     font-family: monospace;
     border: none;
     border-radius: 5px;
+    margin: 5px;
 }
 
 #header {
@@ -67,7 +68,7 @@ h1 {
 }
 
 #github-link:hover {
-    opacity: 80%;
+    opacity: 70%;
 }
 
 
@@ -146,7 +147,7 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, 50%);
-    visibility: visible;
+    display: none;
     z-index: 10;
 }
 
@@ -179,6 +180,7 @@ h1 {
     justify-content: center;
 }
 
+
 #hash-sign {
     font-size: x-large;
     opacity: 50%;
@@ -189,9 +191,46 @@ h1 {
     margin-bottom: 10px;
 }
 
-#result-message {
-    margin: 20px;
+#score-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+}
+
+#score-text {
+    margin-bottom: 5px;
+}
+
+#share-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: medium;
+}
+
+#share-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+#share-icon:hover {
+    opacity: 70%;
+}
+
+#result-copied-msg {
+    font-size: smaller;
+    color: gray;
+    margin-bottom: 15px;
+}
+
+#score-text {
     font-size: 18px;
-    white-space: pre-wrap;
+}
+
+#detailed-result {
+    font-size: 16px;
     text-align: center;
+    white-space: pre-wrap;
 }

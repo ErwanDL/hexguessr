@@ -9,15 +9,20 @@ const classicMode = "classic-mode";
 const trainingMode = "training-mode";
 const blinkMode = "blink-mode";
 const gameModes = {};
-gameModes[classicMode] = "Everyday a new color, the same for everyone, only one attempt.\nChallenge your friends and get the highest score!";
-gameModes[trainingMode] = "Practice with as many attempts and random colors as you want.";
-gameModes[blinkMode] = "Only for the maddest out there: it's like Classic mode,\nbut you only get to see the color for 0.1s!"
+gameModes[classicMode] = { fullName: "Classic mode", description: "Everyday a new color, the same for everyone, only one attempt.\nChallenge your friends and get the highest score!" };
+gameModes[trainingMode] = { fullName: "Training mode", description: "Practice with as many attempts and random colors as you want." };
+gameModes[blinkMode] = { fullName: "Blink mode", description: "Only for the REAL pros: it's like Classic mode,\nbut you only get to see the color for 0.1s!" };
+const defaultGuessPanelText = "Input a guess below!";
 
 const gameModeDescription = document.getElementById('game-mode-description');
 const targetColorPanel = document.getElementById('target-color-panel');
 const yourGuessColorPanel = document.getElementById('your-guess-color-panel');
 const errorMessage = document.getElementById('error-message');
-const resultMessage = document.getElementById('result-message');
+const scoreSection = document.getElementById('score-section');
+const scoreText = document.getElementById('score-text');
+const shareButton = document.getElementById('share-button');
+const resultCopiedMsg = document.getElementById('result-copied-msg');
+const detailedResult = document.getElementById('detailed-result');
 const panelsContainer = document.getElementById('panels-container');
 const inputContainer = document.getElementById('input-container');
 const userGuessInput = document.getElementById('color-guess');
@@ -42,7 +47,7 @@ window.onload = function () {
 }
 
 function selectGameMode(id) {
-    gameModeDescription.textContent = gameModes[id];
+    gameModeDescription.textContent = gameModes[id].description;
 
     for (const mode in gameModes) {
         if (mode === id) {
@@ -69,7 +74,7 @@ function setupClassicMode() {
     dateTitle.textContent = "Classic Mode color of the day:\n" + formatDateDMY(today);
 
     const targetColorRGB = rgbColorFromDate(...today);
-    checkGuessButton.onclick = function () { checkGuess(targetColorRGB, { dateDMY: today, key: classicMode }); };
+    checkGuessButton.onclick = function () { checkGuess(targetColorRGB, { dateDMY: today, mode: classicMode }); };
     targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
 
     const storedDataJSON = localStorage.getItem(classicMode);
@@ -83,7 +88,7 @@ function setupClassicMode() {
         return;
     }
 
-    paintAndScoreUserGuessRGB(storedData.guessRGB, targetColorRGB);
+    paintAndScoreUserGuessRGB(storedData.guessRGB, targetColorRGB, { dateDMY: storedData.dateDMY, mode: classicMode });
     disableGuessing();
 }
 
@@ -107,14 +112,20 @@ function setupBlinkMode() {
     dateTitle.textContent = "Blink Mode color of the day:\n" + formatDateDMY(today);
 
     const targetColorRGB = rgbColorFromDate(...today.map((v) => v + 1));
-    checkGuessButton.onclick = function () { checkGuess(targetColorRGB, { dateDMY: today, key: blinkMode }); };
+    checkGuessButton.onclick = function () {
+        // Re-enable the target color panel
+        targetColorPanel.textContent = "";
+        targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
+
+        checkGuess(targetColorRGB, { dateDMY: today, mode: blinkMode });
+    };
 
     const storedDataJSON = localStorage.getItem(blinkMode);
     if (storedDataJSON != null) {
         const storedData = JSON.parse(storedDataJSON);
         if (datesDMYAreEqual(storedData.dateDMY, today)) {
             targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
-            paintAndScoreUserGuessRGB(storedData.guessRGB, targetColorRGB);
+            paintAndScoreUserGuessRGB(storedData.guessRGB, targetColorRGB, { dateDMY: storedData.dateDMY, mode: blinkMode });
             disableGuessing();
             return;
         }
@@ -122,7 +133,7 @@ function setupBlinkMode() {
 
     disableGuessing();
     panelsContainer.style.visibility = "hidden";
-    readyButton.style.display = "";
+    readyButton.style.display = "inline-block";
 
     readyButton.onclick = function () {
         readyButton.style.display = "none"
@@ -132,6 +143,7 @@ function setupBlinkMode() {
         let countdownValue = 3;
         targetColorPanel.innerText = countdownValue;
         targetColorPanel.style.fontSize = "5em";
+        yourGuessColorPanel.innerText = "Watch out for the color in the left panel!";
 
         // Start the countdown
         const countdownInterval = setInterval(function () {
@@ -143,11 +155,12 @@ function setupBlinkMode() {
                 targetColorPanel.textContent = "none";
                 targetColorPanel.style.fontSize = "";
                 targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
-                reenableGuessing();
 
                 setTimeout(function () {
                     targetColorPanel.style.backgroundColor = "";
                     targetColorPanel.textContent = "Color already shown, you better not have blinked!"
+                    yourGuessColorPanel.textContent = defaultGuessPanelText;
+                    reenableGuessing();
                 }, 100);
             }
         }, 1000);
@@ -165,10 +178,19 @@ function reenableGuessing() {
 }
 
 function resetGameToDefault() {
-    // Reset all text fields
+    // Reset input
     userGuessInput.value = "";
+
+    // Reset error message
     errorMessage.textContent = "";
-    resultMessage.textContent = "";
+
+    // Reset results
+    scoreSection.style.display = "none";
+    scoreText.textContent = "";
+    shareButton.onclick = null;
+    shareButton.style.display = "none";
+    resultCopiedMsg.style.visibility = "hidden";
+    detailedResult.textContent = "";
 
     // Restore guess input
     inputContainer.style.display = "";
@@ -181,7 +203,7 @@ function resetGameToDefault() {
     readyButton.style.display = "none";
 
     // Reset guessed color panel
-    yourGuessColorPanel.textContent = "Input a guess below!";
+    yourGuessColorPanel.textContent = defaultGuessPanelText;
     yourGuessColorPanel.style.backgroundColor = "";
 
     // Unset button actions
@@ -196,25 +218,18 @@ function resetGameToDefault() {
 }
 
 // persistInfo is optional, if provided it must be structured like:
-// `persistInfo = {dateDMY: [24, 5, 2024], key: "classic-mode"}`
+// `persistInfo = {dateDMY: [24, 5, 2024], mode: "classic-mode"}`
 function checkGuess(targetColorRGB, persistInfo = null) {
-    errorMessage.textContent = "";
-    resultMessage.textContent = "";
-
-    // Re-enable the target color panel (for blink mode)
-    targetColorPanel.textContent = "";
-    targetColorPanel.style.backgroundColor = rgbToString(targetColorRGB);
-
     const userGuessRGB = parseUserGuessRGB();
     if (userGuessRGB === null) {
         return;
     }
 
-    paintAndScoreUserGuessRGB(userGuessRGB, targetColorRGB);
+    paintAndScoreUserGuessRGB(userGuessRGB, targetColorRGB, persistInfo);
 
     if (persistInfo !== null) {
         const storageData = { dateDMY: persistInfo.dateDMY, guessRGB: userGuessRGB };
-        localStorage.setItem(persistInfo.key, JSON.stringify(storageData));
+        localStorage.setItem(persistInfo.mode, JSON.stringify(storageData));
 
         disableGuessing();
     }
@@ -232,19 +247,25 @@ function parseUserGuessRGB() {
     return hexToRgb(matches.slice(1));
 }
 
-function paintAndScoreUserGuessRGB(userGuessRGB, targetColorRGB) {
+function paintAndScoreUserGuessRGB(userGuessRGB, targetColorRGB, persistInfo = null) {
     yourGuessColorPanel.textContent = "";
     yourGuessColorPanel.style.backgroundColor = rgbToString(userGuessRGB);
 
-    resultMessage.innerHTML = scoreMessage(userGuessRGB, targetColorRGB);
-}
-
-function scoreMessage(userGuessRGB, targetColorRGB) {
     const dist = rgbDistance(userGuessRGB, targetColorRGB);
     const score = 100 - (100 * dist);
+    const scorePercentage = to1DecimalPlace(score) + "%"
 
-    return "Your score: " + to1DecimalPlace(score) + "%" +
-        "\n\n<b>The target was " + rgbToHex(targetColorRGB) + "</b>" +
+    scoreSection.style.display = "";
+    scoreText.textContent = "Your score: " + scorePercentage;
+
+    if (persistInfo != null) {
+        shareButton.style.display = "";
+        shareButton.onclick = function () {
+            shareToClipboard(scorePercentage, persistInfo.mode, persistInfo.dateDMY);
+        };
+    }
+
+    detailedResult.innerHTML = "<b>The target was " + rgbToHex(targetColorRGB) + "</b>" +
         "\nYour guess was " + rgbToHex(userGuessRGB);
 }
 
@@ -313,4 +334,15 @@ function datesDMYAreEqual(dateA, dateB) {
 
 function formatDateDMY(d) {
     return d[0] + " " + months[d[1]].slice(0, 3) + " " + d[2];
+}
+
+function shareToClipboard(scorePercentage, mode, dateDMY) {
+    const text = "I got " + scorePercentage + " in " + gameModes[mode].fullName + " on " + formatDateDMY(dateDMY)
+        + ". Can you beat me? Play at https://hexguessr.xyz";
+    navigator.clipboard.writeText(text).then(function () {
+        resultCopiedMsg.style.visibility = "visible";
+        setTimeout(function () {
+            resultCopiedMsg.style.visibility = "hidden";
+        }, 3000);
+    });
 }
