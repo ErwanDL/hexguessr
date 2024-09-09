@@ -337,7 +337,7 @@ function datesDMYAreEqual(dateA, dateB) {
 }
 
 function formatDateDMY(d) {
-    return d[0] + " " + months[d[1]].slice(0, 3) + " " + d[2];
+    return d[0] + " " + months[d[1] - 1].slice(0, 3) + " " + d[2];
 }
 
 function shareToClipboard(scorePercentage, mode, dateDMY) {
